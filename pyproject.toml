@@ -64,6 +64,10 @@ torch-cu12 = [
     "torch>=2.7.0",     # Cuda 12 PyTorch
 ]
 
+srtx = [
+    "sensor_rtx" # HERE
+]
+
 # Development and Testing
 # Contains all w/o torch, plus development debugging dependencies
 dev = [
@@ -97,12 +101,17 @@ name = "nvidia"
 url = "https://pypi.nvidia.com/"
 explicit = true
 
+[[tool.uv.index]]
+name = "omnipypi-simple"
+url = "https://urm.nvidia.com/artifactory/api/pypi/ct-omniverse-pypi/simple"
+explicit = true
 
 [tool.uv.sources]
 mujoco-warp = { git = "https://github.com/google-deepmind/mujoco_warp" }
 warp-lang = { index = "nvidia", marker = "sys_platform != 'darwin'" }
 mujoco = { index = "mujoco" }
 torch = [{ index = "pytorch-cu128", extra = "torch-cu12" }]
+sensor_rtx = { index = "omnipypi-simple" }
 
 [dependency-groups]
 dev = ["asv>=0.6.4"]

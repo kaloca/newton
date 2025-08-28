@@ -115,7 +115,7 @@ def create_parser():
         "--viewer",
         type=str,
         default="gl",
-        choices=["gl", "usd", "rerun", "null"],
+        choices=["gl", "usd", "rerun", "null", "srtx"],
         help="Viewer to use (gl, usd, rerun, or null).",
     )
     parser.add_argument(
@@ -164,6 +164,8 @@ def init(parser=None):
         viewer = newton.viewer.ViewerRerun()
     elif args.viewer == "null":
         viewer = newton.viewer.ViewerNull(num_frames=args.num_frames)
+    elif args.viewer == "srtx":
+        viewer = newton.viewer.ViewerSRTX()
     else:
         raise ValueError(f"Invalid viewer: {args.viewer}")
 

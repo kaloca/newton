@@ -144,6 +144,16 @@ if __name__ == "__main__":
     # Parse arguments and initialize viewer
     viewer, args = newton.examples.init()
 
+    viewer = newton.viewer.ViewerSRTX(
+        output_dir="srtx_proper_output",
+        num_frames=7,  # Number of frames to render
+        fps=100,  # Match the simulation FPS!
+        camera_position=(6.0, -8.0, 5.0),  # Position camera back and slightly to the side
+        camera_target=(0.0, 0.0, 1.5),  # Look at center, at drop height
+        resolution=(1920, 1080),
+        host="localhost",
+        port=8081,
+    )
     # Create viewer and run
     example = Example(viewer)
 

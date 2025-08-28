@@ -155,19 +155,31 @@ class ViewerUSD(ViewerBase):
         indices_np = indices.numpy().astype(np.uint32)
 
         if name not in self._meshes:
-            self._ensure_scopes_for_path(self.stage, name)
+            # Store prototypes in a dedicated scope that won't be rendered directly
+            # This prevents duplicate meshes from appearing at origin
+            prototype_path = f"/Prototypes{name}" if not name.startswith("/Prototypes") else name
+            self._ensure_scopes_for_path(self.stage, prototype_path)
 
-            mesh_prim = UsdGeom.Mesh.Define(self.stage, name)
+            # Hide the /Prototypes scope so prototypes aren't rendered directly
+            prototypes_scope = self.stage.GetPrimAtPath("/Prototypes")
+            if prototypes_scope:
+                prototypes_scope.GetAttribute("visibility").Set("invisible") if prototypes_scope.HasAttribute(
+                    "visibility"
+                ) else UsdGeom.Imageable(prototypes_scope).CreateVisibilityAttr().Set("invisible")
+
+            mesh_prim = UsdGeom.Mesh.Define(self.stage, prototype_path)
 
             # setup topology once (do not set every frame)
             face_vertex_counts = [3] * (len(indices_np) // 3)
             mesh_prim.GetFaceVertexCountsAttr().Set(face_vertex_counts)
             mesh_prim.GetFaceVertexIndicesAttr().Set(indices_np)
 
-            # Store the prototype path
-            self._meshes[name] = mesh_prim
+            # Store the prototype with both the original name and the mesh prim
+            # Use original name as key for lookup, but store the actual prototype path
+            self._meshes[name] = (prototype_path, mesh_prim)
 
-        mesh_prim = self._meshes[name]
+        # Get the mesh prim from the stored tuple
+        prototype_path, mesh_prim = self._meshes[name]
         mesh_prim.GetPointsAttr().Set(points_np, self._frame_index)
 
         # Set normals if provided
@@ -181,8 +193,9 @@ class ViewerUSD(ViewerBase):
             # TODO: Implement UV support for USD meshes
             pass
 
-        # how to hide the prototype mesh but not the instances in USD?
-        # mesh_prim.GetVisibilityAttr().Set("inherited" if not hidden else "invisible", self._frame_index)
+        # Don't hide the prototype mesh here - it needs to be visible for instances to work
+        # The proper solution is to place prototypes in a dedicated location
+        # mesh_prim.GetVisibilityAttr().Set("invisible", self._frame_index)
 
     def log_instances(self, name, mesh, xforms, scales, colors, materials):
         """
@@ -204,6 +217,9 @@ class ViewerUSD(ViewerBase):
             msg = f"Mesh prototype '{mesh}' not found for log_instances(). Call log_mesh() first."
             raise RuntimeError(msg)
 
+        # Extract the prototype path from the stored tuple
+        prototype_path, _ = self._meshes[mesh]
+
         num_instances = len(xforms)
 
         # Create instancer if it doesn't exist
@@ -217,8 +233,8 @@ class ViewerUSD(ViewerBase):
                 "displayColor", Sdf.ValueTypeNames.Color3fArray, UsdGeom.Tokens.vertex, 1
             )
 
-            # Set the prototype relationship
-            instancer.GetPrototypesRel().AddTarget(mesh)
+            # Set the prototype relationship to the actual prototype path
+            instancer.GetPrototypesRel().AddTarget(prototype_path)
 
             self._instancers[name] = instancer
 

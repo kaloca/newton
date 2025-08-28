@@ -17,7 +17,7 @@ from ._src.utils.recorder_gui import RecorderImGuiManager
 from ._src.utils.render import RendererOpenGL, RendererUsd
 
 # Import all viewer classes (they handle missing dependencies at instantiation time)
-from ._src.viewer import ViewerGL, ViewerNull, ViewerRerun, ViewerUSD
+from ._src.viewer import ViewerGL, ViewerNull, ViewerRerun, ViewerSRTX, ViewerUSD
 
 __all__ = [
     "RecorderImGuiManager",
@@ -26,5 +26,6 @@ __all__ = [
     "ViewerGL",
     "ViewerNull",
     "ViewerRerun",
+    "ViewerSRTX",
     "ViewerUSD",
 ]
