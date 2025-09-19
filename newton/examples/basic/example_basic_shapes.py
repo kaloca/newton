@@ -144,16 +144,19 @@ if __name__ == "__main__":
     # Parse arguments and initialize viewer
     viewer, args = newton.examples.init()
 
+    # viewer = newton.viewer.ViewerGL()
     viewer = newton.viewer.ViewerSRTX(
-        output_dir="srtx_proper_output",
-        num_frames=7,  # Number of frames to render
-        fps=100,  # Match the simulation FPS!
-        camera_position=(6.0, -8.0, 5.0),  # Position camera back and slightly to the side
-        camera_target=(0.0, 0.0, 1.5),  # Look at center, at drop height
-        resolution=(1920, 1080),
-        host="localhost",
-        port=8081,
+        output_dir="srtx_fast_preview",
+        num_frames=100,
+        fps=30,  # Lower FPS for preview
+        resolution=(1280, 720),  # Lower resolution
+        image_format="jpeg",  # JPEG for small file size
+        jpeg_quality=70,  # Lower quality for smaller files
+        render_every_n_frames=3,  # Only render every 5th frame
+        camera_position=(6.0, -8.0, 5.0),
+        camera_target=(0.0, 0.0, 1.5),
     )
+
     # Create viewer and run
     example = Example(viewer)
 

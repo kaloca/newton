@@ -37,3 +37,7 @@ docs/_build/
 asv/env
 asv/results
 asv/html
+
+sensorrtx_mujoco/
+
+srtx_*

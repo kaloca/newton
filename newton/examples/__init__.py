@@ -152,7 +152,7 @@ def init(parser=None):
     # Set device if specified
     if args.device:
         wp.set_device(args.device)
-
+    return None, args
     # Create viewer based on type
     if args.viewer == "gl":
         viewer = newton.viewer.ViewerGL()

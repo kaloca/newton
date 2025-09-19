@@ -122,6 +122,19 @@ if __name__ == "__main__":
 
     viewer, args = newton.examples.init(parser)
 
+    # viewer = newton.viewer.ViewerUSD(output_path="usd_fast_preview.usd", num_frames=200)
+    viewer = newton.viewer.ViewerSRTX(
+        output_dir="srtx_fast_preview",
+        num_frames=10,
+        fps=30,  # Lower FPS for preview
+        resolution=(1920, 1080),  # Lower resolution
+        image_format="jpeg",  # JPEG for small file size
+        jpeg_quality=100,  # Lower quality for smaller files
+        render_every_n_frames=5,  # Only render every 5th frame
+        camera_position=(0.0, -8.0, 4.0),
+        camera_target=(0.0, 0.0, 1),
+    )
+
     example = Example(viewer, args.num_envs)
 
     newton.examples.run(example)
